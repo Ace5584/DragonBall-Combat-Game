@@ -15,10 +15,14 @@ run = True
 
 walkRight = [pygame.image.load('R1.png'), pygame.image.load('R2.png'), pygame.image.load('R3.png'),
              pygame.image.load('R4.png'), pygame.image.load('R5.png'), pygame.image.load('R6.png'),
-             pygame.image.load('R7.png'), pygame.image.load('R8.png'), pygame.image.load('R9.png')]
+             pygame.image.load('R7.png'), pygame.image.load('R8.png'), pygame.image.load('R9.png'),]
 walkLeft = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.image.load('L3.png'),
             pygame.image.load('L4.png'), pygame.image.load('L5.png'), pygame.image.load('L6.png'),
             pygame.image.load('L7.png'), pygame.image.load('L8.png'), pygame.image.load('L9.png')]
+for x in range(3):
+    walkRight = walkRight + walkRight
+    walkLeft = walkLeft + walkLeft
+
 bg = pygame.image.load('bg.jpg')
 idle = pygame.image.load('standing.png')
 
@@ -38,7 +42,7 @@ class player():
 
     def draw(self, win):
         if walking:
-            if self.walk_count + 1 >= 27:
+            if self.walk_count + 1 >= 216:
                 self.walk_count = 0
             elif self.left:
                 win.blit(walkLeft[round(self.walk_count // 3)], (self.x, self.y))
@@ -63,6 +67,7 @@ class projectile():
 
 def redraw_window():
     clock.tick(27)
+    pygame.display.update()
     window.blit(bg, (0, 0))
     p1.draw(window)
     pygame.display.update()
@@ -78,7 +83,7 @@ while run:
         if event.type == pygame.QUIT:
             run = False
     for bullet in bullets:
-        if
+        None
 
 
     keys = pygame.key.get_pressed()
