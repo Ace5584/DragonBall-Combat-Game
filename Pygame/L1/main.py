@@ -1,11 +1,9 @@
 import pygame
 
 pygame.init()
-
 clock = pygame.time.Clock()
 
 walking = True
-
 screen_x = 1280
 screen_y = 720
 window = pygame.display.set_mode((screen_x, screen_y))
@@ -15,16 +13,17 @@ run = True
 
 walkRight = [pygame.image.load('R1.png'), pygame.image.load('R2.png'), pygame.image.load('R3.png'),
              pygame.image.load('R4.png'), pygame.image.load('R5.png'), pygame.image.load('R6.png'),
-             pygame.image.load('R7.png'), pygame.image.load('R8.png'), pygame.image.load('R9.png'),]
+             pygame.image.load('R7.png'), pygame.image.load('R8.png'), pygame.image.load('R9.png'), ]
 walkLeft = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.image.load('L3.png'),
             pygame.image.load('L4.png'), pygame.image.load('L5.png'), pygame.image.load('L6.png'),
             pygame.image.load('L7.png'), pygame.image.load('L8.png'), pygame.image.load('L9.png')]
 for x in range(3):
     walkRight = walkRight + walkRight
     walkLeft = walkLeft + walkLeft
-
 bg = pygame.image.load('bg.jpg')
 idle = pygame.image.load('standing.png')
+
+shooting_direction = 0
 
 
 class player():
@@ -56,20 +55,24 @@ class player():
             else:
                 win.blit(walkRight[0], (self.x, self.y))
 
+
 class projectile():
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, direction):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
+        self.direction = direction
+        self.vol = 14*direction
+
     def shoot_bullet(self, win):
-        None
+        pygame.draw.circle(win, (255, 255, 0), (self.x, self.y), 5)
+
 
 def redraw_window():
     clock.tick(27)
-    pygame.display.update()
     window.blit(bg, (0, 0))
     p1.draw(window)
+    for z in bullets:
+        z.shoot_bullet(window)
     pygame.display.update()
 
 
@@ -83,14 +86,19 @@ while run:
         if event.type == pygame.QUIT:
             run = False
     for bullet in bullets:
-        None
-
-
+        if 0 < bullet.x < screen_x:
+            bullet.x += bullet.vol
+        else:
+            bullets.pop(bullets.index(bullet))
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_q] or keys[pygame.K_SPACE]:
+        if p1.left:
+            shooting_direction = -1
+        else:
+            shooting_direction = 1
         if len(bullets) < 6:
-            bullets.append(projectile(p1.x + p1.width/2, p1.y + p1.height/2, 5, 5))
+            bullets.append(projectile(round(p1.x + p1.width / 2), round(p1.y + p1.height / 2), shooting_direction))
 
     if keys[pygame.K_a] and p1.x > p1.vol or keys[pygame.K_LEFT] and p1.x > p1.vol:
         p1.x -= p1.vol
