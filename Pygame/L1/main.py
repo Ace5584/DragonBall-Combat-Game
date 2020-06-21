@@ -1,198 +1,107 @@
 import pygame
+import player
+import buttons
+import redraw_window
 
-pygame.init()
-clock = pygame.time.Clock()
+pygame.init()  # Initialize
 
-screen_x = 1280
-screen_y = 720
+screen_x = 1280  # Screen dimension x
+screen_y = 720  # Screen dimension y
 
-window = pygame.display.set_mode((screen_x, screen_y))
-pygame.display.set_caption("My Game")
+window = pygame.display.set_mode((screen_x, screen_y))  # Setting up window as screen
+pygame.display.set_caption("My Game")  # window name
+font = pygame.font.SysFont('comicsans', 45)
+width = 120
+height = 60
+replay = buttons.button(screen_x / 2 - width / 2 - 80, screen_y / 2 - height / 2, width, height, (0, 255, 0), "Play Again")
+quit_game = buttons.button(screen_x / 2 - width / 2 + 80, screen_y / 2 - height / 2, width, height, (0, 255, 0), "Exit Game")
+dim_screen = pygame.Surface((screen_x, screen_y)).convert_alpha()
+dim_screen.fill((0, 0, 0, 130))
 
-walkRight = [pygame.image.load('R1.png'), pygame.image.load('R2.png'), pygame.image.load('R3.png'),
-             pygame.image.load('R4.png'), pygame.image.load('R5.png'), pygame.image.load('R6.png'),
-             pygame.image.load('R7.png'), pygame.image.load('R8.png'), pygame.image.load('R9.png'), ]
-walkLeft = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.image.load('L3.png'),
-            pygame.image.load('L4.png'), pygame.image.load('L5.png'), pygame.image.load('L6.png'),
-            pygame.image.load('L7.png'), pygame.image.load('L8.png'), pygame.image.load('L9.png')]
-c2_walkLeft = [pygame.image.load('L1E.png'), pygame.image.load('L2E.png'), pygame.image.load('L3E.png'),
-               pygame.image.load('L4E.png'), pygame.image.load('L5E.png'), pygame.image.load('L6E.png'),
-               pygame.image.load('L7E.png'), pygame.image.load('L8E.png')]
-c2_walkRight = [pygame.image.load('R1E.png'), pygame.image.load('R2E.png'), pygame.image.load('R3E.png'),
-                pygame.image.load('R4E.png'), pygame.image.load('R5E.png'), pygame.image.load('R6E.png'),
-                pygame.image.load('R7E.png'), pygame.image.load('R8E.png')]
-
-for x in range(4):
-    walkRight = walkRight + walkRight
-    walkLeft = walkLeft + walkLeft
-    c2_walkRight = c2_walkRight + c2_walkRight
-    c2_walkLeft = c2_walkLeft + c2_walkLeft
-
-bg = pygame.image.load('bg.jpg')
-
-
-class player():
-    def __init__(self, x, y, width, height, left, text_location, player_name):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.vol = 10
-        if left:
-            self.left = True
-            self.right = False
-        else:
-            self.right = True
-            self.left = False
-        self.walk_count = 0
-        self.jump = False
-        self.jump_count = 10
-        self.bullets = list()
-        self.bullet_count = 10
-        self.walking = bool()
-        self.hit_box = (self.x + 20, self.y, 28, 60)
-        self.font = pygame.font.Font('freesansbold.ttf', 18)
-        self.text_location = text_location
-        self.player_information = self.font.render(player_name, False, (255, 255, 255))
-        self.lst = list(text_location)
-        self.lst[1] += 20
-        self.bullet_count_text_location = tuple(self.lst)
-        self.player_bullet_count = self.font.render(f'Bullet Remaining: {self.bullet_count}', False, (255, 255, 255))
-        print(self.bullet_count)
-
-    def draw(self, win, character):
-        if character == 1:
-            if p1.walking:
-                if self.walk_count + 1 >= len(walkLeft):
-                    self.walk_count = 0
-                elif self.left:
-                    win.blit(walkLeft[int(round(self.walk_count // 3))], (int(self.x), int(self.y)))
-                    self.walk_count += 1
-                elif self.right:
-                    win.blit(walkRight[int(round(self.walk_count // 3))], (int(self.x), int(self.y)))
-                    self.walk_count += 1
-            else:
-                if self.left:
-                    win.blit(walkLeft[0], (int(self.x), int(self.y)))
-                else:
-                    win.blit(walkRight[0], (int(self.x), int(self.y)))
-            self.hit_box = (self.x + 17, self.y + 11, 29, 52)
-            pygame.draw.rect(window, (255, 0, 0), self.hit_box, 2)
-        if character == 2:
-            if p2.walking:
-                if self.walk_count + 1 >= len(c2_walkLeft):
-                    self.walk_count = 0
-                elif self.left:
-                    win.blit(c2_walkLeft[round(self.walk_count // 3)], (int(self.x), int(self.y)))
-                    self.walk_count += 1
-                elif self.right:
-                    win.blit(c2_walkRight[round(self.walk_count // 3)], (int(self.x), int(self.y)))
-                    self.walk_count += 1
-            else:
-                if self.left:
-                    win.blit(c2_walkLeft[0], (int(self.x), int(self.y)))
-                else:
-                    win.blit(c2_walkRight[0], (int(self.x), int(self.y)))
-            self.hit_box = (self.x + 17, self.y + 2, 31, 57)
-            pygame.draw.rect(window, (255, 0, 0), self.hit_box, 2)
-
-    def movement(self, wasd):
-        for bullet in self.bullets:
-            if 0 < bullet.x < screen_x:
-                bullet.x += bullet.vol
-            else:
-                self.bullets.pop(self.bullets.index(bullet))
-        keys = pygame.key.get_pressed()
-        if wasd:
-            key_shoot = keys[pygame.K_q]
-            key_left = keys[pygame.K_a]
-            key_right = keys[pygame.K_d]
-            key_up = keys[pygame.K_w]
-        else:
-            key_shoot = keys[pygame.K_SPACE]
-            key_left = keys[pygame.K_LEFT]
-            key_right = keys[pygame.K_RIGHT]
-            key_up = keys[pygame.K_UP]
-
-        if key_shoot:
-            if self.bullet_count > 0:
-                if self.left:
-                    shooting_direction = -1
-                else:
-                    shooting_direction = 1
-                self.bullets.append(
-                projectile(round(self.x + self.width / 2), round(self.y + self.height / 2), shooting_direction))
-                self.bullet_count -= 1
-                self.player_bullet_count = self.font.render(f'Bullet Remaining: {self.bullet_count}', False, (255, 255, 255))
-
-        if key_left and self.x > self.vol:
-            self.x -= self.vol
-            self.left = True
-            self.right = False
-            self.walking = True
-        elif key_right and self.x < screen_x - self.vol - self.width:
-            self.x += self.vol
-            self.left = False
-            self.right = True
-            self.walking = True
-        else:
-            self.walking = False
-            self.walk_count = 0
-        if not self.jump:
-            if key_up:
-                self.jump = True
-                self.walk_count = 0
-        else:
-            if self.jump_count >= -10:
-                n = 1
-                if self.jump_count < 0:
-                    n = -1
-                self.y -= self.jump_count ** 2 / 2 * n
-                self.jump_count -= 1
-            else:
-                self.jump = False
-                self.jump_count = 10
-
-class projectile():
-    def __init__(self, x, y, direction):
-        self.x = x
-        self.y = y
-        self.direction = direction
-        self.vol = 14 * direction
-
-    def shoot_bullet(self, win, color):
-        pygame.draw.circle(win, color, (self.x, self.y), 5)
-
-
-
-
-def redraw_window():
-    clock.tick(60)
-    window.blit(bg, (0, 0))
-    window.blit(p1.player_information, p1.text_location)
-    window.blit(p2.player_information, p2.text_location)
-    window.blit(p1.player_bullet_count, p1.bullet_count_text_location)
-    window.blit(p2.player_bullet_count, p2.bullet_count_text_location)
-    p1.draw(window, 1)
-    p2.draw(window, 2)
-    for z in p1.bullets:
-        z.shoot_bullet(window, (255, 255, 0))
-    for z in p2.bullets:
-        z.shoot_bullet(window, (255, 0, 0))
-    pygame.display.update()
-
-
-p1 = player(50, 650, 64, 64, False, (0, 0), f'Player 1:')
-p2 = player(1200, 650, 64, 64, True, (1050, 0), "Player 2:")
+black_bg = pygame.image.load('black background 30percent.png')
 
 run = True
+game = True
+loop = True
+
+p1 = player.Player(50, 650, 64, 64, False, (0, 0), f'PLAYER 1:')
+p2 = player.Player(1200, 650, 64, 64, True, (1050, 0), "PLAYER 2:")
+
+
+bg_music = pygame.mixer.music.load('music.mp3')
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play(-1)
+
 while run:
-    pygame.time.delay(60)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-    p1.movement(True)
-    p2.movement(False)
-    redraw_window()
+
+    while game:
+        pygame.time.delay(30)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                game = False
+
+        if p1.is_dead():
+            game = False
+            loop = True
+        elif p2.is_dead():
+            game = False
+            loop = True
+
+        p1.movement(True, p2, window, screen_x, screen_y)
+        p2.movement(False, p1, window, screen_x, screen_y)
+        redraw_window.redraw_window(window, p1, p2, screen_x)
+
+    if p1.health < 0 or p2.health < 0:
+        while loop:
+            redraw_window.redraw_window(window, p1, p2, screen_x, True)
+            window.blit(dim_screen, (0, 0))
+            replay.draw(window)
+            quit_game.draw(window)
+            if p1.is_dead():
+                text = font.render('PLAYER ONE WON!', 1, (255, 255, 255))
+                window.blit(text, (screen_x / 2 - text.get_width() / 2, screen_y / 2 - text.get_height() / 2 - 80))
+            elif p2.is_dead():
+                text = font.render('PLAYER TWO WON!', 1, (255, 255, 255))
+                window.blit(text, (screen_x / 2 - text.get_width() / 2, screen_y / 2 - text.get_height() / 2 - 80))
+
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    loop = False
+                    run = False
+                pos = pygame.mouse.get_pos()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if replay.is_over(pos):
+                        loop = False
+                        game = True
+                        p1 = player.Player(50, 650, 64, 64, False, (0, 0), f'PLAYER 1:')
+                        p2 = player.Player(1200, 650, 64, 64, True, (1050, 0), "PLAYER 2:")
+                        break
+                    if quit_game.is_over(pos):
+                        loop = False
+                        game = False
+                        run = False
+                        break
+                if event.type == pygame.MOUSEMOTION:
+                    if replay.is_over(pos):
+                        replay.color = (255, 0, 0)
+                    elif not replay.is_over(pos):
+                        replay.color = (0, 255, 0)
+                    if quit_game.is_over(pos):
+                        quit_game.color = (255, 0, 0)
+                    elif not quit_game.is_over(pos):
+                        quit_game.color = (0, 255, 0)
+
 
 pygame.quit()
+
+# start_ticks = pygame.time.get_ticks()
+#
+# count_down_time = 90
+#
+# font = pygame.font.SysFont('comicsans', 60)
+# seconds = (pygame.time.get_ticks() - start_ticks) / 1000
+# text = font.render(f'Time: {seconds}', 1, (255, 255, 255))
+# window.blit(text, (320, 320))
+# print(seconds)
