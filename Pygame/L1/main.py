@@ -11,6 +11,7 @@ screen_y = 720  # Screen dimension y
 window = pygame.display.set_mode((screen_x, screen_y))  # Setting up window as screen
 pygame.display.set_caption("My Game")  # window name
 font = pygame.font.SysFont('comicsans', 45)
+space_font = pygame.font.SysFont('comicsans', 200)
 width = 120
 height = 60
 replay = buttons.button(screen_x / 2 - width / 2 - 80, screen_y / 2 - height / 2, width, height, (0, 255, 0), "Play Again")
@@ -23,6 +24,7 @@ black_bg = pygame.image.load('black background 30percent.png')
 run = True
 game = True
 loop = True
+start = True
 
 p1 = player.Player(50, 650, 64, 64, False, (0, 0), f'PLAYER 1:')
 p2 = player.Player(1200, 650, 64, 64, True, (1050, 0), "PLAYER 2:")
@@ -32,7 +34,21 @@ bg_music = pygame.mixer.music.load('music.mp3')
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)
 
+start_ticks = pygame.time.get_ticks()
+game_start_timer = int((pygame.time.get_ticks() - start_ticks) / 1000)
+original_time = 3
+
 while run:
+    while start:
+        if original_time - game_start_timer != 0:
+            redraw_window.redraw_window(window, p1, p2, screen_x, True, True)
+            game_start_timer = int((pygame.time.get_ticks() - start_ticks) / 1000)
+            start_countdown = space_font.render(str(original_time - int(game_start_timer)), 1, (255, 255, 255))
+            window.blit(start_countdown, (int(screen_x/2), int(screen_y/2)))
+            window.blit(dim_screen, (0, 0))
+            pygame.display.update()
+        else:
+            start = False
 
     while game:
         pygame.time.delay(30)
@@ -52,7 +68,7 @@ while run:
         p2.movement(False, p1, window, screen_x, screen_y)
         redraw_window.redraw_window(window, p1, p2, screen_x)
 
-    if p1.health < 0 or p2.health < 0:
+    if p1.die or p2.die:
         while loop:
             redraw_window.redraw_window(window, p1, p2, screen_x, True)
             window.blit(dim_screen, (0, 0))
@@ -60,10 +76,10 @@ while run:
             quit_game.draw(window)
             if p1.is_dead():
                 text = font.render('PLAYER ONE WON!', 1, (255, 255, 255))
-                window.blit(text, (screen_x / 2 - text.get_width() / 2, screen_y / 2 - text.get_height() / 2 - 80))
+                window.blit(text, (int(screen_x / 2 - text.get_width() / 2), int(screen_y / 2 - text.get_height() / 2 - 80)))
             elif p2.is_dead():
                 text = font.render('PLAYER TWO WON!', 1, (255, 255, 255))
-                window.blit(text, (screen_x / 2 - text.get_width() / 2, screen_y / 2 - text.get_height() / 2 - 80))
+                window.blit(text, (int(screen_x / 2 - text.get_width() / 2), int(screen_y / 2 - text.get_height() / 2 - 80)))
 
             pygame.display.update()
             for event in pygame.event.get():
@@ -96,12 +112,4 @@ while run:
 
 pygame.quit()
 
-# start_ticks = pygame.time.get_ticks()
-#
-# count_down_time = 90
-#
-# font = pygame.font.SysFont('comicsans', 60)
-# seconds = (pygame.time.get_ticks() - start_ticks) / 1000
-# text = font.render(f'Time: {seconds}', 1, (255, 255, 255))
-# window.blit(text, (320, 320))
-# print(seconds)
+

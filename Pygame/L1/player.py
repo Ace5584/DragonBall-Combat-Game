@@ -70,6 +70,7 @@ class Player():
         self.bullet_delay = 0  # Bullet Delay variable to prevent shooting spamming bullets
         self.bottom_health_bar = None
         self.die = False
+        self.time_remaining = 90
 
     def draw(self, win, character):
         if character == 1:
