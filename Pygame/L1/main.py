@@ -44,7 +44,7 @@ while run:
             redraw_window.redraw_window(window, p1, p2, screen_x, True, True)
             game_start_timer = int((pygame.time.get_ticks() - start_ticks) / 1000)
             start_countdown = space_font.render(str(original_time - int(game_start_timer)), 1, (255, 255, 255))
-            window.blit(start_countdown, (int(screen_x/2), int(screen_y/2)))
+            window.blit(start_countdown, (int(screen_x/2 - start_countdown.get_width()/2), int(screen_y/2 - start_countdown.get_height()/2)))
             window.blit(dim_screen, (0, 0))
             pygame.display.update()
         else:
@@ -60,9 +60,11 @@ while run:
         if p1.is_dead():
             game = False
             loop = True
+
         elif p2.is_dead():
             game = False
             loop = True
+
 
         p1.movement(True, p2, window, screen_x, screen_y)
         p2.movement(False, p1, window, screen_x, screen_y)

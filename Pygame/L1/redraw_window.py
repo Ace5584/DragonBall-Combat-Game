@@ -9,6 +9,8 @@ font = pygame.font.SysFont('comicsans', 60)
 
 start_ticks = None
 
+prev_time = 0
+
 
 def redraw_window(window, player1, player2, screen_x, pause=False, start_screen=False):
     clock.tick(60)
@@ -25,15 +27,18 @@ def redraw_window(window, player1, player2, screen_x, pause=False, start_screen=
     pygame.draw.rect(window, (255, 255, 255), player2.bottom_health_bar_location)
     pygame.draw.rect(window, (255, 0, 0), player1.health_bar_location)
     pygame.draw.rect(window, (255, 0, 0), player2.health_bar_location)
+    pygame.draw.rect(window, (255, 255, 255), player1.bottom_shield_bar)
+    pygame.draw.rect(window, (255, 255, 255), player2.bottom_shield_bar)
+    pygame.draw.rect(window, (0, 0, 255), player1.shield_bar)
+    pygame.draw.rect(window, (0, 0, 255), player2.shield_bar)
+
     if not pause:
         global start_ticks
-        if start_ticks is None:
-            start_ticks = pygame.time.get_ticks()
-        else:
-            None
-        seconds = (pygame.time.get_ticks() - start_ticks) / 1000
+        start_ticks = pygame.time.get_ticks()
+        seconds = start_ticks / 1000
+        #print(seconds)
         seconds = int(seconds)
-        text = font.render(f'Time: {count_down_time-seconds}', 1, (255, 255, 255))
+        text = font.render(f'Time: {count_down_time-seconds+3}', 1, (255, 255, 255))
         window.blit(text, (screen_x / 2 - text.get_width() / 2, 0))
         player1.draw(window, 1)
         player2.draw(window, 2)
