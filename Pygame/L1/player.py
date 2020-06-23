@@ -87,6 +87,11 @@ class Player():
         self.reset_time = True
         self.temp_time = 0
         #self.shield_on = False
+        self.shield_timer = 0
+        self.temp3 = list(text_location)  # temporary list for bullet remaining text location
+        self.temp3[1] += 80  # changing location of the bullet remaining text
+        self.temp3[0] += 30
+        self.shield_timer_location = tuple(self.temp3)  # changing temporary list into bullet count text locat
 
     def draw(self, win, character):
         if self.defend:
@@ -152,11 +157,11 @@ class Player():
                 win.blit(c2_walkRight[0], (int(self.x), int(self.y)))
 
     def movement(self, wasd, enemy, win, screen_x, screen_y):
-        print(self.temp2)
         if self.bullet_delay >= 0:
             self.bullet_delay += 1
         if self.bullet_delay > 3:
             self.bullet_delay = 0
+
         if self.temp2[2] == 0:
             self.start_ticks = pygame.time.get_ticks()
             self.seconds = self.start_ticks / 1000
@@ -165,19 +170,21 @@ class Player():
                 self.reset_time = False
             else:
                 self.reset_time = False
+                self.shield_timer = int(self.temp_time + 3) - int(self.seconds)
                 if int(self.seconds) == int(self.temp_time+3):
                     self.temp2[2] = self.shield
                     self.shield_bar = tuple(self.temp2)
+                    self.shield_timer = int(self.temp_time+3) - int(self.seconds)
 
-            #print(self.temp_time)
-            #print(self.seconds)
+
+            # print(self.temp_time)
+            # print(self.seconds)
         else:
             self.reset_time = True
 
 
         for bullet in self.bullets:
-            if bullet.y + bullet.bullet_radius > enemy.hit_box[1] and bullet.y - bullet.bullet_radius < enemy.hit_box[
-                1] + enemy.hit_box[3]:
+            if bullet.y + bullet.bullet_radius > enemy.hit_box[1] and bullet.y - bullet.bullet_radius < enemy.hit_box[1] + enemy.hit_box[3]:
                 if bullet.x + bullet.bullet_radius > enemy.hit_box[0] and bullet.x - bullet.bullet_radius < \
                         enemy.hit_box[0] + enemy.hit_box[2]:
                     if not enemy.defend:
@@ -289,11 +296,9 @@ class Player():
             #if self.temp2[2] == 0:
             #    self.shield_on = False
             #else:
-             #   self.shield_on = True
+            #   self.shield_on = True
         else:
             self.defend = False
-
-
 
     def is_dead(self):
         return self.die

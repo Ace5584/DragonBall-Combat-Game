@@ -2,17 +2,10 @@ import pygame
 
 clock = pygame.time.Clock()  # clock
 bg = pygame.image.load('bg.jpg')  # Importing background image
-
-count_down_time = 90
-
 font = pygame.font.SysFont('comicsans', 60)
+shield_timer_font = pygame.font.SysFont('comicsans', 15)
 
-start_ticks = None
-
-prev_time = 0
-
-
-def redraw_window(window, player1, player2, screen_x, pause=False, start_screen=False):
+def redraw_window(window, player1, player2, screen_x, time_seconds, pause=False, start_screen=False):
     clock.tick(60)
     window.blit(bg, (0, 0))
     window.blit(player1.player_information, player1.text_location)
@@ -23,6 +16,7 @@ def redraw_window(window, player1, player2, screen_x, pause=False, start_screen=
         z.shoot_bullet(window, 'red')
     for z in player2.bullets:
         z.shoot_bullet(window, 'blue')
+
     pygame.draw.rect(window, (255, 255, 255), player1.bottom_health_bar_location)
     pygame.draw.rect(window, (255, 255, 255), player2.bottom_health_bar_location)
     pygame.draw.rect(window, (255, 0, 0), player1.health_bar_location)
@@ -31,23 +25,23 @@ def redraw_window(window, player1, player2, screen_x, pause=False, start_screen=
     pygame.draw.rect(window, (255, 255, 255), player2.bottom_shield_bar)
     pygame.draw.rect(window, (0, 0, 255), player1.shield_bar)
     pygame.draw.rect(window, (0, 0, 255), player2.shield_bar)
+    if player1.shield_timer == 0:
+        None
+    else:
+        text1 = shield_timer_font.render(str(player1.shield_timer), True, (255, 255, 255))
+        window.blit(text1, player1.shield_timer_location)
+
+    if player2.shield_timer == 0:
+        None
+    else:
+        text2 = shield_timer_font.render(str(player2.shield_timer), True, (255, 255, 255))
+        window.blit(text2, player2.shield_timer_location)
 
     if not pause:
-        global start_ticks
-        start_ticks = pygame.time.get_ticks()
-        seconds = start_ticks / 1000
-        #print(seconds)
-        seconds = int(seconds)
-        text = font.render(f'Time: {count_down_time-seconds+3}', 1, (255, 255, 255))
+        text = font.render(str(time_seconds), True, (255, 255, 255))
         window.blit(text, (screen_x / 2 - text.get_width() / 2, 0))
         player1.draw(window, 1)
         player2.draw(window, 2)
-        if count_down_time - seconds == 0:
-            if player1.health < player2.health:
-                player1.die = True
-            else:
-                player2.die = True
-
         pygame.display.update()
     else:
         if start_screen:
@@ -58,13 +52,3 @@ def redraw_window(window, player1, player2, screen_x, pause=False, start_screen=
                 player1.freeze(window, 1)
             else:
                 player2.freeze(window, 2)
-
-# start_ticks = pygame.time.get_ticks()
-#
-# count_down_time = 90
-#
-# font = pygame.font.SysFont('comicsans', 60)
-# seconds = (pygame.time.get_ticks() - start_ticks) / 1000
-# text = font.render(f'Time: {seconds}', 1, (255, 255, 255))
-# window.blit(text, (320, 320))
-# print(seconds)

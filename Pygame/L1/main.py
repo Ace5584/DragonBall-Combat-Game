@@ -19,8 +19,6 @@ quit_game = buttons.button(screen_x / 2 - width / 2 + 80, screen_y / 2 - height 
 dim_screen = pygame.Surface((screen_x, screen_y)).convert_alpha()
 dim_screen.fill((0, 0, 0, 130))
 
-black_bg = pygame.image.load('black background 30percent.png')
-
 run = True
 game = True
 loop = True
@@ -37,13 +35,38 @@ pygame.mixer.music.play(-1)
 start_ticks = pygame.time.get_ticks()
 game_start_timer = int((pygame.time.get_ticks() - start_ticks) / 1000)
 original_time = 3
+temp_time = 0
+reset_time = True
+time_print = str()
+
+timer = pygame.USEREVENT
+pygame.time.set_timer(timer, 1000)
+timer_sec = 90
 
 while run:
+    timer_sec = 90
+    original_time = 3
+    temp_time = 0
+    reset_time = True
+    time_print = str()
     while start:
-        if original_time - game_start_timer != 0:
-            redraw_window.redraw_window(window, p1, p2, screen_x, True, True)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                game = False
+                start = False
+        if reset_time:
+            start_ticks = pygame.time.get_ticks()
             game_start_timer = int((pygame.time.get_ticks() - start_ticks) / 1000)
-            start_countdown = space_font.render(str(original_time - int(game_start_timer)), 1, (255, 255, 255))
+            temp_time = game_start_timer
+            reset_time = False
+        else:
+            reset_time = False
+        if time_print != '0':
+            redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec, True, True)
+            game_start_timer = int((pygame.time.get_ticks() - start_ticks) / 1000)
+            time_print = str(original_time - (int(game_start_timer) - temp_time))
+            start_countdown = space_font.render(time_print, 1, (255, 255, 255))
             window.blit(start_countdown, (int(screen_x/2 - start_countdown.get_width()/2), int(screen_y/2 - start_countdown.get_height()/2)))
             window.blit(dim_screen, (0, 0))
             pygame.display.update()
@@ -56,6 +79,15 @@ while run:
             if event.type == pygame.QUIT:
                 run = False
                 game = False
+                start = False
+            if event.type == timer:
+                if timer_sec > 0:
+                    timer_sec -= 1
+                else:
+                    if p1.health > p2.health:
+                        p2.die = True
+                    else:
+                        p1.die = True
 
         if p1.is_dead():
             game = False
@@ -65,14 +97,13 @@ while run:
             game = False
             loop = True
 
-
         p1.movement(True, p2, window, screen_x, screen_y)
         p2.movement(False, p1, window, screen_x, screen_y)
-        redraw_window.redraw_window(window, p1, p2, screen_x)
+        redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec)
 
     if p1.die or p2.die:
         while loop:
-            redraw_window.redraw_window(window, p1, p2, screen_x, True)
+            redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec, True)
             window.blit(dim_screen, (0, 0))
             replay.draw(window)
             quit_game.draw(window)
@@ -93,6 +124,7 @@ while run:
                     if replay.is_over(pos):
                         loop = False
                         game = True
+                        start = True
                         p1 = player.Player(50, 650, 64, 64, False, (0, 0), f'PLAYER 1:')
                         p2 = player.Player(1200, 650, 64, 64, True, (1050, 0), "PLAYER 2:")
                         break
