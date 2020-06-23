@@ -86,6 +86,7 @@ class Player():
         self.seconds = self.start_ticks / 1000
         self.reset_time = True
         self.temp_time = 0
+        #self.shield_on = False
 
     def draw(self, win, character):
         if self.defend:
@@ -151,18 +152,25 @@ class Player():
                 win.blit(c2_walkRight[0], (int(self.x), int(self.y)))
 
     def movement(self, wasd, enemy, win, screen_x, screen_y):
+        print(self.temp2)
         if self.bullet_delay >= 0:
             self.bullet_delay += 1
         if self.bullet_delay > 3:
             self.bullet_delay = 0
         if self.temp2[2] == 0:
+            self.start_ticks = pygame.time.get_ticks()
+            self.seconds = self.start_ticks / 1000
             if self.reset_time:
                 self.temp_time = self.seconds
+                self.reset_time = False
             else:
                 self.reset_time = False
                 if int(self.seconds) == int(self.temp_time+3):
-                    self.temp2 = self.defend
-            print(self.temp_time)
+                    self.temp2[2] = self.shield
+                    self.shield_bar = tuple(self.temp2)
+
+            #print(self.temp_time)
+            #print(self.seconds)
         else:
             self.reset_time = True
 
@@ -278,8 +286,14 @@ class Player():
                     self.jump_count = 10
         if key_defend:
             self.defend = True
+            #if self.temp2[2] == 0:
+            #    self.shield_on = False
+            #else:
+             #   self.shield_on = True
         else:
             self.defend = False
+
+
 
     def is_dead(self):
         return self.die
