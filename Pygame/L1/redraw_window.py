@@ -5,7 +5,10 @@ bg = pygame.image.load('bg.jpg')  # Importing background image
 font = pygame.font.SysFont('comicsans', 60)
 shield_timer_font = pygame.font.SysFont('comicsans', 15)
 
-def redraw_window(window, player1, player2, screen_x, time_seconds, pause=False, start_screen=False):
+shield_timer = [pygame.image.load('timer_1.png'), pygame.image.load('timer_2.png'), pygame.image.load('timer_3.png'), pygame.image.load('timer_4.png')]
+
+
+def redraw_window(window, player1, player2, screen_x, time_seconds, bullet_seconds, pause=False, start_screen=False):
     clock.tick(60)
     window.blit(bg, (0, 0))
     window.blit(player1.player_information, player1.text_location)
@@ -25,17 +28,18 @@ def redraw_window(window, player1, player2, screen_x, time_seconds, pause=False,
     pygame.draw.rect(window, (255, 255, 255), player2.bottom_shield_bar)
     pygame.draw.rect(window, (0, 0, 255), player1.shield_bar)
     pygame.draw.rect(window, (0, 0, 255), player2.shield_bar)
-    if player1.shield_timer == 0:
-        None
-    else:
-        text1 = shield_timer_font.render(str(player1.shield_timer), True, (255, 255, 255))
-        window.blit(text1, player1.shield_timer_location)
-
-    if player2.shield_timer == 0:
-        None
-    else:
-        text2 = shield_timer_font.render(str(player2.shield_timer), True, (255, 255, 255))
-        window.blit(text2, player2.shield_timer_location)
+    if bullet_seconds == 0:
+        window.blit(shield_timer[3], player1.shield_timer_location)
+        window.blit(shield_timer[3], player2.shield_timer_location)
+    if bullet_seconds == 1:
+        window.blit(shield_timer[2], player1.shield_timer_location)
+        window.blit(shield_timer[2], player2.shield_timer_location)
+    if bullet_seconds == 2:
+        window.blit(shield_timer[1], player1.shield_timer_location)
+        window.blit(shield_timer[1], player2.shield_timer_location)
+    if bullet_seconds == 3:
+        window.blit(shield_timer[0], player1.shield_timer_location)
+        window.blit(shield_timer[0], player2.shield_timer_location)
 
     if not pause:
         text = font.render(str(time_seconds), True, (255, 255, 255))

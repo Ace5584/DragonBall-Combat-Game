@@ -65,7 +65,7 @@ class Player():
         # allocating text to bullet remaining
         self.temp1 = list(self.bullet_count_text_location)  # temporary list for health bar text location
         self.temp1[1] += 20  # changing location of the bullet remaining text
-        self.bullet_damage = 30
+        self.bullet_damage = 15
         self.temp1.append(self.health)
         self.temp1.append(20)
         self.health_bar_location = tuple(self.temp1)  # changing temporary list into health bar text location tuple
@@ -91,29 +91,30 @@ class Player():
         self.temp3 = list(text_location)  # temporary list for bullet remaining text location
         self.temp3[1] += 80  # changing location of the bullet remaining text
         self.temp3[0] += 30
-        self.shield_timer_location = tuple(self.temp3)  # changing temporary list into bullet count text locat
+        self.shield_timer_location = tuple(self.temp3)  # changing temporary list into bullet count text located
 
     def draw(self, win, character):
         if self.defend:
             self.vol = 3
         else:
             self.vol = 6
+
         if character == 1:
             if self.walking:
+                if self.defend and self.temp2[2] > 0:
+                    win.blit(red_defend, (int(self.x), int(self.y)))
                 if self.walk_count + 1 >= len(walkLeft):
                     self.walk_count = 0
                 elif self.left:
-                    if self.defend and self.temp2[2] != 0:
+                    if self.defend and self.temp2[2] > 0:
                         win.blit(red_defend, (int(self.x), int(self.y)))
                     win.blit(walkLeft[int(round(self.walk_count // 3))], (int(self.x), int(self.y)))
                     self.walk_count += 1
                 elif self.right:
-                    if self.defend:
-                        win.blit(red_defend, (int(self.x), int(self.y)))
                     win.blit(walkRight[int(round(self.walk_count // 3))], (int(self.x), int(self.y)))
                     self.walk_count += 1
             else:
-                if self.defend and self.temp2[2] != 0:
+                if self.defend and self.temp2[2] > 0:
                     win.blit(red_defend, (int(self.x), int(self.y)))
                 if self.left:
                     win.blit(walkLeft[0], (int(self.x), int(self.y)))
@@ -123,7 +124,7 @@ class Player():
             # pygame.draw.rect(window, (255, 0, 0), self.hit_box, 2)
         if character == 2:
             if self.walking:
-                if self.defend and self.temp2[2] != 0:
+                if self.defend and self.temp2[2] > 0:
                     win.blit(blue_defend, (int(self.x), int(self.y)))
                 if self.walk_count + 1 >= len(c2_walkLeft):
                     self.walk_count = 0
@@ -134,7 +135,7 @@ class Player():
                     win.blit(c2_walkRight[round(self.walk_count // 3)], (int(self.x), int(self.y)))
                     self.walk_count += 1
             else:
-                if self.defend and self.temp2[2] != 0:
+                if self.defend and self.temp2[2] > 0:
                     win.blit(blue_defend, (int(self.x), int(self.y)))
                 if self.left:
                     win.blit(c2_walkLeft[0], (int(self.x), int(self.y)))
@@ -142,7 +143,6 @@ class Player():
                     win.blit(c2_walkRight[0], (int(self.x), int(self.y)))
             self.hit_box = (self.x + 17, self.y + 2, 31, 57)
             # pygame.draw.rect(window, (255, 0, 0), self.hit_box, 2)
-
 
     def freeze(self, win, character):
         if character == 1:
@@ -198,7 +198,7 @@ class Player():
                             enemy.health_bar_location = tuple(enemy.temp1)
                             pygame.draw.rect(win, (255, 0, 0), self.health_bar_location)
                             self.bullets.pop(self.bullets.index(bullet))
-                            self.health -= 30
+                            self.health -= 15
                             self.die = False
                             continue
                         else:
@@ -229,6 +229,7 @@ class Player():
                 bullet.x += bullet.vol
             else:
                 self.bullets.pop(self.bullets.index(bullet))
+
         keys = pygame.key.get_pressed()
         if wasd:
             key_shoot = keys[pygame.K_q]
@@ -293,11 +294,13 @@ class Player():
                     self.jump_count = 10
         if key_defend:
             self.defend = True
-            #if self.temp2[2] == 0:
-            #    self.shield_on = False
-            #else:
-            #   self.shield_on = True
+            #print("DEFEND")
+            # if self.temp2[2] == 0:
+            #     self.shield_on = False
+            # else:
+            #    self.shield_on = True
         else:
+            #print("FALSE")
             self.defend = False
 
     def is_dead(self):

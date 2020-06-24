@@ -15,7 +15,7 @@ space_font = pygame.font.SysFont('comicsans', 200)
 width = 120
 height = 60
 replay = buttons.button(screen_x / 2 - width / 2 - 80, screen_y / 2 - height / 2, width, height, (0, 255, 0), "Play Again")
-quit_game = buttons.button(screen_x / 2 - width / 2 + 80, screen_y / 2 - height / 2, width, height, (0, 255, 0), "Exit Game")
+quit_game = buttons.button(screen_x / 2 - width / 2 + 80, screen_y / 2 - height / 2, width, height, (0, 255, 0), "Quit Game")
 dim_screen = pygame.Surface((screen_x, screen_y)).convert_alpha()
 dim_screen.fill((0, 0, 0, 130))
 
@@ -23,6 +23,8 @@ run = True
 game = True
 loop = True
 start = True
+
+game_quit = False
 
 p1 = player.Player(50, 650, 64, 64, False, (0, 0), f'PLAYER 1:')
 p2 = player.Player(1200, 650, 64, 64, True, (1050, 0), "PLAYER 2:")
@@ -43,6 +45,10 @@ timer = pygame.USEREVENT
 pygame.time.set_timer(timer, 1000)
 timer_sec = 90
 
+timer_bullet = pygame.USEREVENT + 1
+pygame.time.set_timer(timer_bullet, 1000)
+bullet_timer_sec = 3
+
 while run:
     timer_sec = 90
     original_time = 3
@@ -54,6 +60,7 @@ while run:
             if event.type == pygame.QUIT:
                 run = False
                 game = False
+                game_quit = True
                 start = False
         if reset_time:
             start_ticks = pygame.time.get_ticks()
@@ -63,7 +70,7 @@ while run:
         else:
             reset_time = False
         if time_print != '0':
-            redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec, True, True)
+            redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec, bullet_timer_sec, True, True)
             game_start_timer = int((pygame.time.get_ticks() - start_ticks) / 1000)
             time_print = str(original_time - (int(game_start_timer) - temp_time))
             start_countdown = space_font.render(time_print, 1, (255, 255, 255))
@@ -80,6 +87,7 @@ while run:
                 run = False
                 game = False
                 start = False
+                game_quit = True
             if event.type == timer:
                 if timer_sec > 0:
                     timer_sec -= 1
@@ -88,6 +96,16 @@ while run:
                         p2.die = True
                     else:
                         p1.die = True
+            if event.type == timer_bullet:
+                if bullet_timer_sec > 0:
+                    bullet_timer_sec -= 1
+                elif bullet_timer_sec == 0:
+                    p1.bullet_count += 1
+                    p2.bullet_count += 1
+                    p1.player_bullet_count = p1.font.render(f'BULLET REMAINING: {p1.bullet_count}', False, (255, 255, 255))
+                    p2.player_bullet_count = p2.font.render(f'BULLET REMAINING: {p2.bullet_count}', False, (255, 255, 255))
+                    bullet_timer_sec = 3
+
 
         if p1.is_dead():
             game = False
@@ -99,11 +117,11 @@ while run:
 
         p1.movement(True, p2, window, screen_x, screen_y)
         p2.movement(False, p1, window, screen_x, screen_y)
-        redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec)
+        redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec, bullet_timer_sec)
 
     if p1.die or p2.die:
         while loop:
-            redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec, True)
+            redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec, bullet_timer_sec, True)
             window.blit(dim_screen, (0, 0))
             replay.draw(window)
             quit_game.draw(window)
@@ -119,6 +137,7 @@ while run:
                 if event.type == pygame.QUIT:
                     loop = False
                     run = False
+                    game_quit = True
                 pos = pygame.mouse.get_pos()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if replay.is_over(pos):
@@ -132,6 +151,7 @@ while run:
                         loop = False
                         game = False
                         run = False
+                        game_quit = True
                         break
                 if event.type == pygame.MOUSEMOTION:
                     if replay.is_over(pos):
@@ -144,6 +164,6 @@ while run:
                         quit_game.color = (0, 255, 0)
 
 
-pygame.quit()
+#pygame.quit()
 
 
