@@ -15,13 +15,21 @@ c2_walkLeft = [pygame.image.load('L1E.png'), pygame.image.load('L2E.png'), pygam
 c2_walkRight = [pygame.image.load('R1E.png'), pygame.image.load('R2E.png'), pygame.image.load('R3E.png'),
                 pygame.image.load('R4E.png'), pygame.image.load('R5E.png'), pygame.image.load('R6E.png'),
                 pygame.image.load('R7E.png'), pygame.image.load('R8E.png')]  # Important character 2 walking right png
+sword_StabLeft = [pygame.image.load('sword/SL1.png'), pygame.image.load('sword/SL2.png'),
+                  pygame.image.load('sword/SL3.png'), pygame.image.load('sword/SL4.png')]
+sword_StabRight = [pygame.image.load('sword/SR1.png'), pygame.image.load('sword/SR2.png'),
+                   pygame.image.load('sword/SR3.png'), pygame.image.load('sword/SR4.png')]
+c2_sword_StabLeft = [pygame.image.load('sword/SL1E.png'), pygame.image.load('sword/SL2E.png'),
+                     pygame.image.load('sword/SL3E.png'), pygame.image.load('sword/SL4E.png')]
+c2_sword_StabRight = [pygame.image.load('sword/SR1E.png'), pygame.image.load('sword/SR2E.png'),
+                      pygame.image.load('sword/SR3E.png'), pygame.image.load('sword/SR4E.png')]
+
 blue_defend = pygame.image.load('blue_g.png')
 red_defend = pygame.image.load('red_g.png')
 
 pygame.init()
 shoot_sound = pygame.mixer.Sound('laser_shoot.wav')
 hit = pygame.mixer.Sound('get_shot.wav')
-
 
 for x in range(4):
     walkRight = walkRight + walkRight
@@ -86,7 +94,7 @@ class Player():
         self.seconds = self.start_ticks / 1000
         self.reset_time = True
         self.temp_time = 0
-        #self.shield_on = False
+        # self.shield_on = False
         self.shield_timer = 0
         self.temp3 = list(text_location)  # temporary list for bullet remaining text location
         self.temp3[1] += 80  # changing location of the bullet remaining text
@@ -171,20 +179,19 @@ class Player():
             else:
                 self.reset_time = False
                 self.shield_timer = int(self.temp_time + 3) - int(self.seconds)
-                if int(self.seconds) == int(self.temp_time+3):
+                if int(self.seconds) == int(self.temp_time + 3):
                     self.temp2[2] = self.shield
                     self.shield_bar = tuple(self.temp2)
-                    self.shield_timer = int(self.temp_time+3) - int(self.seconds)
-
+                    self.shield_timer = int(self.temp_time + 3) - int(self.seconds)
 
             # print(self.temp_time)
             # print(self.seconds)
         else:
             self.reset_time = True
 
-
         for bullet in self.bullets:
-            if bullet.y + bullet.bullet_radius > enemy.hit_box[1] and bullet.y - bullet.bullet_radius < enemy.hit_box[1] + enemy.hit_box[3]:
+            if bullet.y + bullet.bullet_radius > enemy.hit_box[1] and bullet.y - bullet.bullet_radius < enemy.hit_box[
+                1] + enemy.hit_box[3]:
                 if bullet.x + bullet.bullet_radius > enemy.hit_box[0] and bullet.x - bullet.bullet_radius < \
                         enemy.hit_box[0] + enemy.hit_box[2]:
                     if not enemy.defend:
@@ -294,13 +301,13 @@ class Player():
                     self.jump_count = 10
         if key_defend:
             self.defend = True
-            #print("DEFEND")
+            # print("DEFEND")
             # if self.temp2[2] == 0:
             #     self.shield_on = False
             # else:
             #    self.shield_on = True
         else:
-            #print("FALSE")
+            # print("FALSE")
             self.defend = False
 
     def is_dead(self):
