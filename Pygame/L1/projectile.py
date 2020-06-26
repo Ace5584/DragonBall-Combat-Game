@@ -1,7 +1,7 @@
 import pygame
 
-blue_bullet = pygame.image.load('blue_bullet.png')  # Importing blue bullet png
-red_bullet = pygame.image.load('red_bullet.png')  # Importing red bullet png
+blue_bullet = pygame.image.load('projectile/blue_bullet.png')  # Importing blue bullet png
+red_bullet = pygame.image.load('projectile/red_bullet.png')  # Importing red bullet png
 
 class projectile():
     def __init__(self, x, y, direction):

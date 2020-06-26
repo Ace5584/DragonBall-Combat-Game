@@ -1,35 +1,33 @@
 import pygame
 import projectile
 
-walkRight = [pygame.image.load('R1.png'), pygame.image.load('R2.png'), pygame.image.load('R3.png'),
-             pygame.image.load('R4.png'), pygame.image.load('R5.png'), pygame.image.load('R6.png'),
-             pygame.image.load('R7.png'), pygame.image.load('R8.png'), pygame.image.load('R9.png'), ]  # Important
-# character 1 walking right png
-walkLeft = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.image.load('L3.png'),
-            pygame.image.load('L4.png'), pygame.image.load('L5.png'), pygame.image.load('L6.png'),
-            pygame.image.load('L7.png'), pygame.image.load('L8.png'), pygame.image.load('L9.png')]  # Important
-# character 1 walking left png
-c2_walkLeft = [pygame.image.load('L1E.png'), pygame.image.load('L2E.png'), pygame.image.load('L3E.png'),
-               pygame.image.load('L4E.png'), pygame.image.load('L5E.png'), pygame.image.load('L6E.png'),
-               pygame.image.load('L7E.png'), pygame.image.load('L8E.png')]  # Important character 2 walking left png
-c2_walkRight = [pygame.image.load('R1E.png'), pygame.image.load('R2E.png'), pygame.image.load('R3E.png'),
-                pygame.image.load('R4E.png'), pygame.image.load('R5E.png'), pygame.image.load('R6E.png'),
-                pygame.image.load('R7E.png'), pygame.image.load('R8E.png')]  # Important character 2 walking right png
-sword_StabLeft = [pygame.image.load('sword/SL1.png'), pygame.image.load('sword/SL2.png'),
-                  pygame.image.load('sword/SL3.png'), pygame.image.load('sword/SL4.png')]
-sword_StabRight = [pygame.image.load('sword/SR1.png'), pygame.image.load('sword/SR2.png'),
-                   pygame.image.load('sword/SR3.png'), pygame.image.load('sword/SR4.png')]
-c2_sword_StabLeft = [pygame.image.load('sword/SL1E.png'), pygame.image.load('sword/SL2E.png'),
-                     pygame.image.load('sword/SL3E.png'), pygame.image.load('sword/SL4E.png')]
-c2_sword_StabRight = [pygame.image.load('sword/SR1E.png'), pygame.image.load('sword/SR2E.png'),
-                      pygame.image.load('sword/SR3E.png'), pygame.image.load('sword/SR4E.png')]
+walkRight = [pygame.image.load('character/R1.png'), pygame.image.load('character/R2.png'),
+             pygame.image.load('character/R3.png'), pygame.image.load('character/R4.png'),
+             pygame.image.load('character/R5.png'), pygame.image.load('character/R6.png'),
+             pygame.image.load('character/R7.png'), pygame.image.load('character/R8.png'),
+             pygame.image.load('character/R9.png')]
 
-blue_defend = pygame.image.load('blue_g.png')
-red_defend = pygame.image.load('red_g.png')
+walkLeft = [pygame.image.load('character/L1.png'), pygame.image.load('character/L2.png'),
+            pygame.image.load('character/L3.png'), pygame.image.load('character/L4.png'),
+            pygame.image.load('character/L5.png'), pygame.image.load('character/L6.png'),
+            pygame.image.load('character/L7.png'), pygame.image.load('character/L8.png'),
+            pygame.image.load('character/L9.png')]
+
+c2_walkLeft = [pygame.image.load('character/L1E.png'), pygame.image.load('character/L2E.png'),
+               pygame.image.load('character/L3E.png'), pygame.image.load('character/L4E.png'),
+               pygame.image.load('character/L5E.png'), pygame.image.load('character/L6E.png'),
+               pygame.image.load('character/L7E.png'), pygame.image.load('character/L8E.png')]
+c2_walkRight = [pygame.image.load('character/R1E.png'), pygame.image.load('character/R2E.png'),
+                pygame.image.load('character/R3E.png'), pygame.image.load('character/R4E.png'),
+                pygame.image.load('character/R5E.png'), pygame.image.load('character/R6E.png'),
+                pygame.image.load('character/R7E.png'), pygame.image.load('character/R8E.png')]
+
+blue_defend = pygame.image.load('character/blue_g.png')
+red_defend = pygame.image.load('character/red_g.png')
 
 pygame.init()
-shoot_sound = pygame.mixer.Sound('laser_shoot.wav')
-hit = pygame.mixer.Sound('get_shot.wav')
+shoot_sound = pygame.mixer.Sound('sound/laser_shoot.wav')
+hit = pygame.mixer.Sound('sound/get_shot.wav')
 
 for x in range(4):
     walkRight = walkRight + walkRight
@@ -44,6 +42,8 @@ class Player():
         self.shield = 100
         self.x = x  # Player coordination x
         self.y = y  # Player coordination y
+        self.sword_x = x + 15
+        self.sword_y = y - 1
         self.default_x = x  # Original Player coordination x
         self.default_y = y  # Original Player coordination y
         self.width = width  # Player width
@@ -190,8 +190,8 @@ class Player():
             self.reset_time = True
 
         for bullet in self.bullets:
-            if bullet.y + bullet.bullet_radius > enemy.hit_box[1] and bullet.y - bullet.bullet_radius < enemy.hit_box[
-                1] + enemy.hit_box[3]:
+            if bullet.y + bullet.bullet_radius > enemy.hit_box[1] and bullet.y - bullet.bullet_radius < \
+                    enemy.hit_box[1] + enemy.hit_box[3]:
                 if bullet.x + bullet.bullet_radius > enemy.hit_box[0] and bullet.x - bullet.bullet_radius < \
                         enemy.hit_box[0] + enemy.hit_box[2]:
                     if not enemy.defend:

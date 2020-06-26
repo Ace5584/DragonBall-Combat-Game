@@ -30,7 +30,7 @@ p1 = player.Player(50, 650, 64, 64, False, (0, 0), f'PLAYER 1:')
 p2 = player.Player(1200, 650, 64, 64, True, (1050, 0), "PLAYER 2:")
 
 
-bg_music = pygame.mixer.music.load('music.mp3')
+bg_music = pygame.mixer.music.load('sound/music.mp3')
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)
 
@@ -47,7 +47,7 @@ timer_sec = 90
 
 timer_bullet = pygame.USEREVENT + 1
 pygame.time.set_timer(timer_bullet, 1000)
-bullet_timer_sec = 3
+bullet_timer_sec = 10
 
 while run:
     timer_sec = 90
@@ -104,7 +104,7 @@ while run:
                     p2.bullet_count += 1
                     p1.player_bullet_count = p1.font.render(f'BULLET REMAINING: {p1.bullet_count}', False, (255, 255, 255))
                     p2.player_bullet_count = p2.font.render(f'BULLET REMAINING: {p2.bullet_count}', False, (255, 255, 255))
-                    bullet_timer_sec = 3
+                    bullet_timer_sec = 10
 
 
         if p1.is_dead():
