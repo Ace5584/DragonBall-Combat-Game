@@ -32,3 +32,7 @@ while running:
     screen.blit(timer_text, (300, 20))
     pygame.display.update()
 pygame.quit()
+
+/** TIMER NOTES **/
+
+

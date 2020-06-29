@@ -26,20 +26,13 @@ start = True
 
 game_quit = False
 
-p1 = player.Player(50, 650, 64, 64, False, (0, 0), f'PLAYER 1:')
-p2 = player.Player(1200, 650, 64, 64, True, (1050, 0), "PLAYER 2:")
+p1 = player.Player(50, 650, 64, 64, False, (0, 0), f'PLAYER 1:', 1)
+p2 = player.Player(1200, 650, 64, 64, True, (1050, 0), "PLAYER 2:", 2)
 
 
 bg_music = pygame.mixer.music.load('sound/music.mp3')
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)
-
-start_ticks = pygame.time.get_ticks()
-game_start_timer = int((pygame.time.get_ticks() - start_ticks) / 1000)
-original_time = 3
-temp_time = 0
-reset_time = True
-time_print = str()
 
 timer = pygame.USEREVENT
 pygame.time.set_timer(timer, 1000)
@@ -49,12 +42,11 @@ timer_bullet = pygame.USEREVENT + 1
 pygame.time.set_timer(timer_bullet, 1000)
 bullet_timer_sec = 10
 
+start_timer = pygame.USEREVENT + 2
+pygame.time.set_timer(start_timer, 1000)
+start_timer_sec = 3
+
 while run:
-    timer_sec = 90
-    original_time = 3
-    temp_time = 0
-    reset_time = True
-    time_print = str()
     while start:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -62,23 +54,18 @@ while run:
                 game = False
                 game_quit = True
                 start = False
-        if reset_time:
-            start_ticks = pygame.time.get_ticks()
-            game_start_timer = int((pygame.time.get_ticks() - start_ticks) / 1000)
-            temp_time = game_start_timer
-            reset_time = False
-        else:
-            reset_time = False
-        if time_print != '0':
-            redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec, bullet_timer_sec, True, True)
-            game_start_timer = int((pygame.time.get_ticks() - start_ticks) / 1000)
-            time_print = str(original_time - (int(game_start_timer) - temp_time))
-            start_countdown = space_font.render(time_print, 1, (255, 255, 255))
-            window.blit(start_countdown, (int(screen_x/2 - start_countdown.get_width()/2), int(screen_y/2 - start_countdown.get_height()/2)))
-            window.blit(dim_screen, (0, 0))
-            pygame.display.update()
-        else:
-            start = False
+            if event.type == start_timer:
+                if start_timer_sec > 1:
+                    start_timer_sec -= 1
+                else:
+                    pygame.time.set_timer(start_timer, 0)
+                    start = False
+                    game = True
+        redraw_window.redraw_window(window, p1, p2, screen_x, timer_sec, bullet_timer_sec, True, True)
+        start_countdown = space_font.render(str(start_timer_sec), 1, (255, 255, 255))
+        window.blit(start_countdown, (int(screen_x / 2 - start_countdown.get_width() / 2), int(screen_y / 2 - start_countdown.get_height() / 2)))
+        window.blit(dim_screen, (0, 0))
+        pygame.display.update()
 
     while game:
         pygame.time.delay(30)

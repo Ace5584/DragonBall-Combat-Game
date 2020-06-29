@@ -1,0 +1,4 @@
+timer = pygame.USEREVENT
+timer_bullet = pygame.USEREVENT + 1
+start_timer = pygame.USEREVENT + 2
+self.sword_timer = pygame.USEREVENT + 3

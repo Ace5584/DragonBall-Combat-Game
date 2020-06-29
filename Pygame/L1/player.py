@@ -22,6 +22,15 @@ c2_walkRight = [pygame.image.load('character/R1E.png'), pygame.image.load('chara
                 pygame.image.load('character/R5E.png'), pygame.image.load('character/R6E.png'),
                 pygame.image.load('character/R7E.png'), pygame.image.load('character/R8E.png')]
 
+sword_StabLeft = [pygame.image.load('sword/SL1.png'), pygame.image.load('sword/SL2.png'),
+                  pygame.image.load('sword/SL3.png'), pygame.image.load('sword/SL4.png')]
+sword_StabRight = [pygame.image.load('sword/SR1.png'), pygame.image.load('sword/SR2.png'),
+                   pygame.image.load('sword/SR3.png'), pygame.image.load('sword/SR4.png')]
+c2_sword_StabLeft = [pygame.image.load('sword/SL1E.png'), pygame.image.load('sword/SL2E.png'),
+                     pygame.image.load('sword/SL3E.png'), pygame.image.load('sword/SL4E.png')]
+c2_sword_StabRight = [pygame.image.load('sword/SR1E.png'), pygame.image.load('sword/SR2E.png'),
+                      pygame.image.load('sword/SR3E.png'), pygame.image.load('sword/SR4E.png')]
+
 blue_defend = pygame.image.load('character/blue_g.png')
 red_defend = pygame.image.load('character/red_g.png')
 
@@ -37,13 +46,18 @@ for x in range(4):
 
 
 class Player():
-    def __init__(self, x, y, width, height, left, text_location, player_name):
+    def __init__(self, x, y, width, height, left, text_location, player_name, character):
         self.health = 200
         self.shield = 100
         self.x = x  # Player coordination x
         self.y = y  # Player coordination y
-        self.sword_x = x + 15
-        self.sword_y = y - 1
+        self.character = character
+        if self.character == 1:
+            #self.x = self.x - 36
+            self.hit_box = (self.x, self.y, 100, 64)
+        elif self.character == 2:
+            #self.x = self.x - 16
+            self.hit_box = (self.x, self.y, 80, 64)
         self.default_x = x  # Original Player coordination x
         self.default_y = y  # Original Player coordination y
         self.width = width  # Player width
@@ -100,57 +114,60 @@ class Player():
         self.temp3[1] += 80  # changing location of the bullet remaining text
         self.temp3[0] += 30
         self.shield_timer_location = tuple(self.temp3)  # changing temporary list into bullet count text located
+        self.stabbing = False
+        self.stab_count = 0
 
     def draw(self, win, character):
-        if self.defend:
-            self.vol = 3
-        else:
-            self.vol = 6
+        if not self.stabbing:
+            if self.defend:
+                self.vol = 3
+            else:
+                self.vol = 6
 
-        if character == 1:
-            if self.walking:
-                if self.defend and self.temp2[2] > 0:
-                    win.blit(red_defend, (int(self.x), int(self.y)))
-                if self.walk_count + 1 >= len(walkLeft):
-                    self.walk_count = 0
-                elif self.left:
+            if character == 1:
+                if self.walking:
                     if self.defend and self.temp2[2] > 0:
                         win.blit(red_defend, (int(self.x), int(self.y)))
-                    win.blit(walkLeft[int(round(self.walk_count // 3))], (int(self.x), int(self.y)))
-                    self.walk_count += 1
-                elif self.right:
-                    win.blit(walkRight[int(round(self.walk_count // 3))], (int(self.x), int(self.y)))
-                    self.walk_count += 1
-            else:
-                if self.defend and self.temp2[2] > 0:
-                    win.blit(red_defend, (int(self.x), int(self.y)))
-                if self.left:
-                    win.blit(walkLeft[0], (int(self.x), int(self.y)))
+                    if self.walk_count + 1 >= len(walkLeft):
+                        self.walk_count = 0
+                    elif self.left:
+                        if self.defend and self.temp2[2] > 0:
+                            win.blit(red_defend, (int(self.x), int(self.y)))
+                        win.blit(walkLeft[int(round(self.walk_count // 3))], (int(self.x), int(self.y)))
+                        self.walk_count += 1
+                    elif self.right:
+                        win.blit(walkRight[int(round(self.walk_count // 3))], (int(self.x), int(self.y)))
+                        self.walk_count += 1
                 else:
-                    win.blit(walkRight[0], (int(self.x), int(self.y)))
-            self.hit_box = (self.x + 17, self.y + 11, 29, 52)
-            # pygame.draw.rect(window, (255, 0, 0), self.hit_box, 2)
-        if character == 2:
-            if self.walking:
-                if self.defend and self.temp2[2] > 0:
-                    win.blit(blue_defend, (int(self.x), int(self.y)))
-                if self.walk_count + 1 >= len(c2_walkLeft):
-                    self.walk_count = 0
-                elif self.left:
-                    win.blit(c2_walkLeft[round(self.walk_count // 3)], (int(self.x), int(self.y)))
-                    self.walk_count += 1
-                elif self.right:
-                    win.blit(c2_walkRight[round(self.walk_count // 3)], (int(self.x), int(self.y)))
-                    self.walk_count += 1
-            else:
-                if self.defend and self.temp2[2] > 0:
-                    win.blit(blue_defend, (int(self.x), int(self.y)))
-                if self.left:
-                    win.blit(c2_walkLeft[0], (int(self.x), int(self.y)))
+                    if self.defend and self.temp2[2] > 0:
+                        win.blit(red_defend, (int(self.x), int(self.y)))
+                    if self.left:
+                        win.blit(walkLeft[0], (int(self.x), int(self.y)))
+                    else:
+                        win.blit(walkRight[0], (int(self.x), int(self.y)))
+                self.hit_box = (self.x + 17, self.y + 11, 29, 52)
+                # pygame.draw.rect(window, (255, 0, 0), self.hit_box, 2)
+            if character == 2:
+                if self.walking:
+                    if self.defend and self.temp2[2] > 0:
+                        win.blit(blue_defend, (int(self.x), int(self.y)))
+                    if self.walk_count + 1 >= len(c2_walkLeft):
+                        self.walk_count = 0
+                    elif self.left:
+                        win.blit(c2_walkLeft[round(self.walk_count // 3)], (int(self.x), int(self.y)))
+                        self.walk_count += 1
+                    elif self.right:
+                        win.blit(c2_walkRight[round(self.walk_count // 3)], (int(self.x), int(self.y)))
+                        self.walk_count += 1
                 else:
-                    win.blit(c2_walkRight[0], (int(self.x), int(self.y)))
-            self.hit_box = (self.x + 17, self.y + 2, 31, 57)
-            # pygame.draw.rect(window, (255, 0, 0), self.hit_box, 2)
+                    if self.defend and self.temp2[2] > 0:
+                        win.blit(blue_defend, (int(self.x), int(self.y)))
+                    if self.left:
+                        win.blit(c2_walkLeft[0], (int(self.x), int(self.y)))
+                    else:
+                        win.blit(c2_walkRight[0], (int(self.x), int(self.y)))
+                self.hit_box = (self.x + 17, self.y + 2, 31, 57)
+                # pygame.draw.rect(window, (255, 0, 0), self.hit_box, 2)
 
     def freeze(self, win, character):
         if character == 1:
@@ -245,6 +262,7 @@ class Player():
             key_up = keys[pygame.K_w]
             key_down = keys[pygame.K_s]
             key_defend = keys[pygame.K_e]
+            key_stab = keys[pygame.K_r]
         else:
             key_shoot = keys[pygame.K_SPACE]
             key_left = keys[pygame.K_LEFT]
@@ -252,6 +270,7 @@ class Player():
             key_up = keys[pygame.K_UP]
             key_down = keys[pygame.K_DOWN]
             key_defend = keys[pygame.K_m]
+            key_stab = keys[pygame.K_n]
         if self.bullet_delay == 0:
             if key_shoot:
                 if self.bullet_count > 0:
@@ -267,12 +286,12 @@ class Player():
                                                                 (255, 255, 255))
                     shoot_sound.play()
 
-        if key_left and self.x > self.vol:
+        if key_left and self.x > self.vol and not key_stab:
             self.x -= self.vol
             self.left = True
             self.right = False
             self.walking = True
-        elif key_right and self.x < screen_x - self.vol - self.width:
+        elif key_right and self.x < screen_x - self.vol - self.width and not key_stab:
             self.x += self.vol
             self.left = False
             self.right = True
@@ -309,6 +328,46 @@ class Player():
         else:
             # print("FALSE")
             self.defend = False
+        if key_stab:
+            self.walking = False
+            self.stabbing = True
+        else:
+            self.stabbing = False
+
+    def attack(self, enemy, window):
+        if self.stabbing:
+            if self.character == 1:
+                if self.stab_count + 1 >= len(sword_StabLeft):
+                    self.stab_count = 0
+                if self.left:
+                    #self.x = self.x - 36
+                    window.blit(sword_StabLeft[round(self.stab_count//3)], (int(self.x), int(self.y)))
+                    #pygame.draw.rect(window, (0, 255, 0), self.hit_box, 1)
+                    self.stab_count += 1
+                elif self.right:
+                    #self.x = self.x + 36
+                    window.blit(sword_StabRight[round(self.stab_count//3)], (int(self.x), int(self.y)))
+                    #pygame.draw.rect(window, (0, 255, 0), self.hit_box, 1)
+                    self.stab_count += 1
+                self.hit_box = (self.x, self.y, 80, 64)
+            elif self.character == 2:
+                if self.stab_count + 1 >= len(sword_StabLeft):
+                    self.stab_count = 0
+                if self.left:
+                    window.blit(c2_sword_StabLeft[round(self.stab_count//3)], (int(self.x), int(self.y)))
+                    pygame.draw.rect(window, (0, 255, 0), self.hit_box, 1)
+                    self.stab_count += 1
+                    #self.x = self.x + 16
+                elif self.right:
+                    window.blit(c2_sword_StabRight[round(self.stab_count//3)], (int(self.x), int(self.y)))
+                    #pygame.draw.rect(window, (0, 255, 0), self.hit_box, 1)
+                    self.stab_count += 1
+                    #self.x = self.x - 16
+                self.hit_box = (self.x, self.y, 80, 64)
+
+            if enemy.hit_box[1] > self.hit_box[1] and enemy.hit_box[1] < self.hit_box[1] + self.hit_box[3]:
+                if enemy.hit_box[0] > self.hit_box[0] and enemy.hit_box[0] < self.hit_box[0] + self.hit_box[2]:
+                    print("HIT")
 
     def is_dead(self):
         return self.die

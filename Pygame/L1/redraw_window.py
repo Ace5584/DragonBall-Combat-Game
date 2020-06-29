@@ -47,6 +47,8 @@ def redraw_window(window, player1, player2, screen_x, time_seconds, bullet_secon
         window.blit(text, (screen_x / 2 - text.get_width() / 2, 0))
         player1.draw(window, 1)
         player2.draw(window, 2)
+        player1.attack(player2, window)
+        player2.attack(player1, window)
         pygame.display.update()
     else:
         if start_screen:
