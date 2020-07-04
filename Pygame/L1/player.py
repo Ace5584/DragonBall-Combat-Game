@@ -53,10 +53,8 @@ class Player():
         self.y = y  # Player coordination y
         self.character = character
         if self.character == 1:
-            #self.x = self.x - 36
             self.hit_box = (self.x, self.y, 100, 64)
         elif self.character == 2:
-            #self.x = self.x - 16
             self.hit_box = (self.x, self.y, 80, 64)
         self.default_x = x  # Original Player coordination x
         self.default_y = y  # Original Player coordination y
@@ -87,7 +85,7 @@ class Player():
         # allocating text to bullet remaining
         self.temp1 = list(self.bullet_count_text_location)  # temporary list for health bar text location
         self.temp1[1] += 20  # changing location of the bullet remaining text
-        self.bullet_damage = 15
+        self.bullet_damage = 70
         self.temp1.append(self.health)
         self.temp1.append(20)
         self.health_bar_location = tuple(self.temp1)  # changing temporary list into health bar text location tuple
@@ -108,7 +106,6 @@ class Player():
         self.seconds = self.start_ticks / 1000
         self.reset_time = True
         self.temp_time = 0
-        # self.shield_on = False
         self.shield_timer = 0
         self.temp3 = list(text_location)  # temporary list for bullet remaining text location
         self.temp3[1] += 80  # changing location of the bullet remaining text
@@ -200,11 +197,9 @@ class Player():
                     self.temp2[2] = self.shield
                     self.shield_bar = tuple(self.temp2)
                     self.shield_timer = int(self.temp_time + 3) - int(self.seconds)
-
-            # print(self.temp_time)
-            # print(self.seconds)
         else:
             self.reset_time = True
+
 
         for bullet in self.bullets:
             if bullet.y + bullet.bullet_radius > enemy.hit_box[1] and bullet.y - bullet.bullet_radius < \
@@ -218,11 +213,10 @@ class Player():
                                 enemy.temp1[2] = enemy.temp1[2] - self.bullet_damage
                             else:
                                 enemy.temp1[2] = 0
-
                             enemy.health_bar_location = tuple(enemy.temp1)
                             pygame.draw.rect(win, (255, 0, 0), self.health_bar_location)
                             self.bullets.pop(self.bullets.index(bullet))
-                            self.health -= 15
+                            #self.health -= 15
                             self.die = False
                             continue
                         else:
@@ -355,7 +349,7 @@ class Player():
                     self.stab_count = 0
                 if self.left:
                     window.blit(c2_sword_StabLeft[round(self.stab_count//3)], (int(self.x), int(self.y)))
-                    pygame.draw.rect(window, (0, 255, 0), self.hit_box, 1)
+                    #pygame.draw.rect(window, (0, 255, 0), self.hit_box, 1)
                     self.stab_count += 1
                     #self.x = self.x + 16
                 elif self.right:
@@ -367,6 +361,18 @@ class Player():
 
             if enemy.hit_box[1] > self.hit_box[1] and enemy.hit_box[1] < self.hit_box[1] + self.hit_box[3]:
                 if enemy.hit_box[0] > self.hit_box[0] and enemy.hit_box[0] < self.hit_box[0] + self.hit_box[2]:
+                    if enemy.temp1[2] > 0:
+                        if enemy.temp1[2] - self.bullet_damage > 0:
+                            enemy.temp1[2] = enemy.temp1[2] - 1
+                        else:
+                            enemy.temp1[2] = 0
+                        enemy.health_bar_location = tuple(enemy.temp1)
+                        pygame.draw.rect(window, (255, 0, 0), self.health_bar_location)
+                        # self.health -= 15
+                        self.die = False
+
+                    else:
+                        self.die = True
                     print("HIT")
 
     def is_dead(self):

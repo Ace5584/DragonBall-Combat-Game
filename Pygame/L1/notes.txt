@@ -35,4 +35,25 @@ pygame.quit()
 
 /** TIMER NOTES **/
 
+/* MANUAL TIMER NOTES */
+start_ticks = pygame.time.get_ticks()
+seconds = start_ticks / 1000
+reset_time = True
+temp_time = 0
+shield_timer = 0
 
+if x == 0:
+    start_ticks = pygame.time.get_ticks()
+    seconds = self.start_ticks / 1000
+    if reset_time:
+        temp_time = self.seconds
+        reset_time = False
+    else:
+        reset_time = False
+        shield_timer = int(temp_time + 3) - int(self.seconds)
+        if int(seconds) == int(temp_time + 3):
+            temp2[2] = shield
+            shield_bar = tuple(self.temp2)
+            shield_timer = int(temp_time + 3) - int(seconds)
+else:
+    self.reset_time = True
