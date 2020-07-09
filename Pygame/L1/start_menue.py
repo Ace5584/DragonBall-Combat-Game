@@ -29,8 +29,8 @@ while menu:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             menu = False
-        play_btn.draw(window)
-        quit_btn.draw(window)
+        play_btn.draw(window, False)
+        quit_btn.draw(window, False)
         pos = pygame.mouse.get_pos()
         if event.type == pygame.MOUSEBUTTONDOWN:
             if play_btn.is_over(pos):

@@ -12,8 +12,11 @@ class button():
         self.font = pygame.font.SysFont('comicsans', text_size, True)
         self.image = image
 
-    def draw(self, win):
-        #pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
+    def draw(self, win, draw_rect):
+        if draw_rect:
+            pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
+        else:
+            None
         if self.text != '':
             text = self.font.render(self.text, 1, (0, 0, 0))
             win.blit(text, (self.x + self.width/2 - text.get_width()/2, self.y + self.height/2 - text.get_height()/2))
