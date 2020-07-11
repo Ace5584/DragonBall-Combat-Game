@@ -188,7 +188,6 @@ class Player():
                 if self.teleport and self.teleport_remain > 0:
                     self.walking = False
                     if self.right:
-                        print(self.teleport_count)
                         if 0 <= self.teleport_count < 1:
                             win.blit(right_move_teleport[round(self.teleport_count)], (int(self.x), int(self.y)))
                             self.teleport_count += 0.2
@@ -201,6 +200,7 @@ class Player():
                             self.x = 1280 - 128
                             self.teleport_remain -= 1
                             self.teleport_count = 0
+                        self.knock_down = False
                     else:
                         if 0 <= self.teleport_count < 1:
                             win.blit(left_move_teleport[round(self.teleport_count)], (int(self.x), int(self.y)))
@@ -214,6 +214,7 @@ class Player():
                             self.x = 0
                             self.teleport_remain -= 1
                             self.teleport_count = 0
+                        self.knock_down = False
                 else:
                     pass
 
@@ -296,7 +297,6 @@ class Player():
                 if self.teleport and self.teleport_remain > 0:
                     self.walking = False
                     if self.right:
-                        print(self.teleport_count)
                         if 0 <= self.teleport_count < 1:
                             win.blit(c2_right_move_teleport[round(self.teleport_count)], (int(self.x), int(self.y)))
                             self.teleport_count += 0.2
@@ -309,6 +309,7 @@ class Player():
                             self.x = 1280 - 128
                             self.teleport_remain -= 1
                             self.teleport_count = 0
+                        self.knock_down = False
                     else:
                         if 0 <= self.teleport_count < 1:
                             win.blit(c2_left_move_teleport[round(self.teleport_count)], (int(self.x), int(self.y)))
@@ -322,6 +323,7 @@ class Player():
                             self.x = 0
                             self.teleport_remain -= 1
                             self.teleport_count = 0
+                        self.knock_down = False
                 else:
                     pass
                 if not self.vanish:
@@ -645,6 +647,8 @@ class Player():
                     if enemy.temp1[2] > 0:
                         if enemy.temp1[2] - 1 > 0:
                             enemy.temp1[2] = enemy.temp1[2] - 1
+                            if self.character == 2:
+                                enemy.temp1[0] += 1
                         else:
                             enemy.temp1[2] = 0
                         enemy.health_bar_location = tuple(enemy.temp1)
