@@ -43,9 +43,18 @@ die_count = 0
 die_count_2 = 0
 ex_count = 0
 ex_count_2 = 0
-
+flying = pygame.mixer.Sound('sound/flying.wav')
+#flying.set_volume(0.5)
 
 def redraw_window(window, player1, player2, screen_x, time_seconds, bullet_seconds, pause=False, start_screen=False):
+    if player1.is_dead() or player2.is_dead():
+        player1.walking = False
+        player2.walking = False
+    if player1.walking or player2.walking and not player1.is_dead() and not player2.is_dead():
+        pygame.mixer.Channel(1).play(flying)
+    elif player1.is_dead() or player2.is_dead() or not player1.walking or not player2.walking:
+        flying.stop()
+
     global c1_move_count
     global c2_move_count
     global die_count
@@ -78,7 +87,7 @@ def redraw_window(window, player1, player2, screen_x, time_seconds, bullet_secon
         if c2_move_count > 2:
             c2_move_count = 0
     else:
-        window.blit(character1_display_dead_R, (1168, 30))
+        window.blit(character2_display_dead_R, (1168, 30))
 
     # window.blit(player1.player_information, player1.text_location)
     # window.blit(player2.player_information, player2.text_location)

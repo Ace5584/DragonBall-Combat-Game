@@ -68,6 +68,8 @@ pygame.init()
 shoot_sound = pygame.mixer.Sound('sound/shoot_sound.wav')
 hit = pygame.mixer.Sound('sound/get_shot.wav')
 explode_sound = pygame.mixer.Sound('sound/explotion.wav')
+hover_btn = pygame.mixer.Sound('sound/hover_btn.wav')
+teleport_sound = pygame.mixer.Sound('sound/teleport_sound.wav')
 
 for x in range(20):
     walkRight = walkRight + walkRight
@@ -181,6 +183,9 @@ class Player():
 
         self.teleport_count = 0
 
+        self.last_damage = 0
+        self.total_damage = 0
+
 
     def draw(self, win, character):
         if character == 1:
@@ -193,6 +198,7 @@ class Player():
                             self.teleport_count += 0.2
                             self.x += 1
                         elif 1 <= self.teleport_count < 2:
+                            teleport_sound.play()
                             win.blit(vanish, (int(self.x), int(self.y)))
                             self.teleport_count += 0.2
                             self.x += 1
@@ -207,6 +213,7 @@ class Player():
                             self.teleport_count += 0.2
                             self.x -= 1
                         elif 1 <= self.teleport_count < 2:
+                            teleport_sound.play()
                             win.blit(vanish, (int(self.x), int(self.y)))
                             self.teleport_count += 0.2
                             self.x -= 1
@@ -302,6 +309,7 @@ class Player():
                             self.teleport_count += 0.2
                             self.x += 1
                         elif 1 <= self.teleport_count < 2:
+                            teleport_sound.play()
                             win.blit(c2_vanish, (int(self.x), int(self.y)))
                             self.teleport_count += 0.2
                             self.x += 1
@@ -316,6 +324,7 @@ class Player():
                             self.teleport_count += 0.2
                             self.x -= 1
                         elif 1 <= self.teleport_count < 2:
+                            teleport_sound.play()
                             win.blit(c2_vanish, (int(self.x), int(self.y)))
                             self.teleport_count += 0.2
                             self.x -= 1
@@ -521,12 +530,12 @@ class Player():
             else:
                 self.shoot_status = False
 
-        if key_left and self.x > self.vol and not key_stab:
+        if key_left and self.x > self.vol and not key_stab and not self.knock_down:
             self.x -= self.vol
             self.left = True
             self.right = False
             self.walking = True
-        elif key_right and self.x < self.screen_x - self.vol - self.width and not key_stab:
+        elif key_right and self.x < self.screen_x - self.vol - self.width and not key_stab and not self.knock_down:
             self.x += self.vol
             self.left = False
             self.right = True
@@ -570,6 +579,7 @@ class Player():
                 if key_up:
                     self.jump = True
                     self.walk_count = 0
+                    pygame.mixer.Channel(4).play(pygame.mixer.Sound('sound/jump_sound.wav'))
             else:
                 if key_up:
                     self.first_press_jump = False
@@ -595,9 +605,11 @@ class Player():
                     if self.stab_count >= 0:
                         window.blit(punch_left[round(self.stab_count)], (int(self.x), int(self.y)))
                         self.stab_count += 0.2
-                        if self.x - 10 > self.vol:
+                        if self.x - 6 > self.vol:
                             if round(self.stab_count) == 1 or round(self.stab_count) == 4:
-                                self.x -= 10
+                                self.x -= 6
+                        if round(self.stab_count) == 1:
+                            pygame.mixer.Channel(2).play(pygame.mixer.Sound('sound/punch.wav'))
                         elif self.x - 3 > self.vol:
                             self.x -= 3
                     if self.stab_count >= 6:
@@ -606,9 +618,11 @@ class Player():
                     if self.stab_count >= 0:
                         window.blit(punch_right[round(self.stab_count)], (int(self.x), int(self.y)))
                         self.stab_count += 0.2
-                        if self.x + 10 < self.screen_x - self.vol - self.width:
+                        if self.x + 6 < self.screen_x - self.vol - self.width:
                             if round(self.stab_count) == 1 or round(self.stab_count) == 4:
-                                self.x += 10
+                                self.x += 6
+                        if round(self.stab_count) == 1:
+                            pygame.mixer.Channel(2).play(pygame.mixer.Sound('sound/punch.wav'))
                         elif self.x + 3 < self.screen_x - self.vol - self.width:
                             self.x += 3
                     if self.stab_count >= 6:
@@ -617,6 +631,7 @@ class Player():
                 self.hit_box = (self.x, self.y, 80, 64)
 
             elif self.character == 2:
+                exe_sound = True
                 if self.left:
                     if self.stab_count >= 0:
                         window.blit(c2_punch_left[round(self.stab_count)], (int(self.x), int(self.y)))
@@ -624,6 +639,9 @@ class Player():
                         if self.x - 10 > self.vol:
                             if round(self.stab_count) == 1 or round(self.stab_count) == 4:
                                 self.x -= 10
+                        if round(self.stab_count) == 1:
+                            print('EXE')
+                            pygame.mixer.Channel(3).play(pygame.mixer.Sound('sound/punch.wav'))
                         elif self.x - 3 > self.vol:
                             self.x -= 3
                     if self.stab_count >= 6:
@@ -635,6 +653,9 @@ class Player():
                         if self.x + 10 < self.screen_x - self.vol - self.width:
                             if round(self.stab_count) == 1 or round(self.stab_count) == 4:
                                 self.x += 10
+                        if round(self.stab_count) == 1:
+                            print('EXE')
+                            pygame.mixer.Channel(3).play(pygame.mixer.Sound('sound/punch.wav'))
                         elif self.x + 3 < self.screen_x - self.vol - self.width:
                             self.x += 3
                     if self.stab_count >= 6:
@@ -644,9 +665,13 @@ class Player():
 
             if enemy.hit_box[1] > self.hit_box[1] and enemy.hit_box[1] < self.hit_box[1] + self.hit_box[3]:
                 if enemy.hit_box[0] > self.hit_box[0] and enemy.hit_box[0] < self.hit_box[0] + self.hit_box[2]:
+                    if self.total_damage > self.last_damage + 10:
+                        pygame.mixer.Channel(4).play(pygame.mixer.Sound('sound/get_shot.wav'))
+                        self.last_damage = self.total_damage
                     if enemy.temp1[2] > 0:
                         if enemy.temp1[2] - 1 > 0:
                             enemy.temp1[2] = enemy.temp1[2] - 1
+                            self.total_damage += 1
                             if self.character == 2:
                                 enemy.temp1[0] += 1
                         else:

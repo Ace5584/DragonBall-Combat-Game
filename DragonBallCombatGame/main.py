@@ -7,6 +7,10 @@ import AAfilledRoundedRect
 game_quit = False
 draw = False
 
+hover_btn = pygame.mixer.Sound('sound/hover_btn.wav')
+play_1 = True
+play_2 = True
+play_3 = True
 
 def game_loop():
     pygame.init()  # Initialize
@@ -46,7 +50,7 @@ def game_loop():
         draw = False
         redraw_window.die_count = 0
         pygame.mixer.music.load('sound/dragon_ball_bg.mp3')
-        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.set_volume(0.15)
         pygame.mixer.music.play(-1)
 
         timer = pygame.USEREVENT
@@ -178,18 +182,33 @@ def game_loop():
                             game = False
                             run = False
                             break
+                    global play_3
+                    global play_2
+                    global play_1
                     if event.type == pygame.MOUSEMOTION:
                         if replay.is_over(pos):
+                            if play_1:
+                                hover_btn.play()
+                                play_1 = False
                             replay.image = replay_img_yellow
                         elif not replay.is_over(pos):
+                            play_1 = True
                             replay.image = replay_img_red
                         if quit_game.is_over(pos):
+                            if play_2:
+                                hover_btn.play()
+                                play_2 = False
                             quit_game.image = quit_img_yellow
                         elif not quit_game.is_over(pos):
+                            play_2 = True
                             quit_game.image = quit_img_red
                         if menu_btn.is_over(pos):
+                            if play_3:
+                                hover_btn.play()
+                                play_3 = False
                             menu_btn.image = menu_img_yellow
                         elif not menu_btn.is_over(pos):
+                            play_3 = True
                             menu_btn.image = menu_img_red
 
 

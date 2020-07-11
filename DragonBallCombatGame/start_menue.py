@@ -26,6 +26,14 @@ dim_screen.fill((0, 0, 0, 130))
 menu = True
 background = True
 
+pygame.mixer.music.load('sound/dragon_ball_bg.mp3')
+pygame.mixer.music.set_volume(0.15)
+pygame.mixer.music.play(-1)
+
+hover_btn = pygame.mixer.Sound('sound/hover_btn.wav')
+play_1 = True
+play_2 = True
+
 while menu:
     window.blit(bg, (0, 0))
     #window.blit(dim_screen, (0, 0))
@@ -47,14 +55,23 @@ while menu:
                     menu = False
             if quit_btn.is_over(pos):
                 menu = False
+
         if event.type == pygame.MOUSEMOTION:
             if play_btn.is_over(pos):
+                if play_1:
+                    hover_btn.play()
+                    play_1 = False
                 play_btn.image = play_btn_toggle_img
             elif not play_btn.is_over(pos):
+                play_1 = True
                 play_btn.image = play_btn_img
             if quit_btn.is_over(pos):
+                if play_2:
+                    hover_btn.play()
+                    play_2 = False
                 quit_btn.image = quit_btn_toggle_img
             elif not play_btn.is_over(pos):
+                play_2 = True
                 quit_btn.image = quit_btn_img
         pygame.display.update()
 
